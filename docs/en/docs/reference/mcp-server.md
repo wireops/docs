@@ -19,7 +19,7 @@ Run it as its own small container:
 ```bash
 docker run -d --name wireops-mcp -p 8091:8091 \
   -e SERVER_URL=http://wireops-host:8090 \
-  ghcr.io/wireops/wireops-mcp:latest
+  ghcr.io/wireops/wireops-mcp:1.0.0
 ```
 
 Then create a service account in wireops (Settings → Service Accounts) with whatever role you're comfortable an assistant having, and generate an API key for it.
@@ -30,6 +30,8 @@ Then create a service account in wireops (Settings → Service Accounts) with wh
 claude mcp add --transport http wireops http://localhost:8091/mcp \
   --header "X-Wireops-Api-Key: wireops_sk_your_api_key_here"
 ```
+
+The command above writes the key in plain text to Claude Code's config file (`.mcp.json`) and to your shell history. Prefer exporting `WIREOPS_API_KEY` from a secrets manager and referencing it as `${WIREOPS_API_KEY}` in `.mcp.json` instead of pasting the literal key, especially if that file is checked into a repository.
 
 Run `claude mcp list` to confirm it's connected, then just ask Claude things like "list my stacks" or "why did the last sync on X fail." It discovers the available tools on its own.
 

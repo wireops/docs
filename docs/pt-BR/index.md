@@ -58,26 +58,26 @@ Deixe Claude, Cursor e outros [assistentes de IA](docs/reference/mcp-server.md) 
 
 <div class="screenshot-grid" markdown>
 <figure class="screenshot" markdown>
-![Visão geral das stacks](assets/images/screenshots/stacks-overview.png){ data-gallery="wireops-desktop" }
+![Visão geral das stacks](assets/images/screenshots/stacks-overview.png){ data-gallery="wireops-desktop" data-title="Stacks: todo deploy Compose, status de sync/deploy e worker atribuído." }
 <figcaption markdown>**Stacks**: todo deploy Compose, status de sync/deploy e worker atribuído.</figcaption>
 </figure>
 <figure class="screenshot" markdown>
-![Grafo de dependências da stack](assets/images/screenshots/dependency-graph.png){ data-gallery="wireops-desktop" }
+![Grafo de dependências da stack](assets/images/screenshots/dependency-graph.png){ data-gallery="wireops-desktop" data-title="Grafo de dependências: serviços, redes e volumes de cada stack." }
 <figcaption markdown>**Grafo de dependências**: serviços, redes e volumes de cada stack.</figcaption>
 </figure>
 <figure class="screenshot" markdown>
-![Jobs cron](assets/images/screenshots/jobs.png){ data-gallery="wireops-desktop" }
+![Jobs cron](assets/images/screenshots/jobs.png){ data-gallery="wireops-desktop" data-title="Jobs: containers avulsos agendados por cron, com histórico de execuções." }
 <figcaption markdown>**Jobs**: containers avulsos agendados por cron, com histórico de execuções.</figcaption>
 </figure>
 <figure class="screenshot" markdown>
-![Integrações](assets/images/screenshots/integrations.png){ data-gallery="wireops-desktop" }
+![Integrações](assets/images/screenshots/integrations.png){ data-gallery="wireops-desktop" data-title="Integrações: Traefik, Caddy, Dozzle, Vault, Infisical, SOPS e mais." }
 <figcaption markdown>**Integrações**: Traefik, Caddy, Dozzle, Vault, Infisical, SOPS e mais.</figcaption>
 </figure>
 </div>
 
 <div class="screenshot-grid screenshot-grid--compact" markdown>
 <figure class="screenshot" markdown>
-![Dashboard mobile](assets/images/screenshots/mobile-dashboard.png){ data-gallery="wireops-mobile" }
+![Dashboard mobile](assets/images/screenshots/mobile-dashboard.png){ data-gallery="wireops-mobile" data-title="Interface responsiva: gerencie stacks e segredos pelo celular." }
 <figcaption markdown>**Interface responsiva**: gerencie stacks e segredos pelo celular.</figcaption>
 </figure>
 <figure class="screenshot" markdown>

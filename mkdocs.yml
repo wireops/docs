@@ -59,6 +59,8 @@ plugins:
       zoomable: true
       draggable: true
       auto_caption: true
+      skip_classes:
+        - hero__logo
 
 markdown_extensions:
   - admonition
