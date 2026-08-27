@@ -10,5 +10,5 @@ Um administrador gera o token, o worker registra seu hostname e fingerprint, abr
 
 ## Jobs agendados
 
-Um `job.yaml` no repositório define cron, imagem, comando, tags, modo, recursos e timeout. Na execução, o servidor escolhe workers pelas tags, cria o registro de execução e o worker roda um container temporário, informando saída e código de retorno.
+Um `job.yaml` no repositório define cron, imagem, comando, tags, modo, recursos e timeout. Na execução, o servidor escolhe workers pelas tags, valida imagem/volumes/rede contra a [política do worker](policies.md), cria o registro de execução e o worker roda um container temporário, informando saída e código de retorno. Veja [Jobs agendados](jobs.md) para o esquema completo do arquivo, os modos de despacho e o ciclo de vida de uma execução.
 

@@ -11,7 +11,7 @@ O RBAC do wireops separa capacidades de visualização, operação, administraç
 
 ## Política de deploy
 
-A política do worker impede configurações perigosas como containers privilegiados, namespaces de host, socket Docker, volumes de host ou imagens `latest`, além de poder limitar imagens, redes, volumes, dispositivos e capacidades. Há uma política global e substituições por worker; uma alteração renderizada continua sujeita às mesmas regras.
+A política do worker impede configurações perigosas como containers privilegiados, namespaces de host, socket Docker, volumes de host ou imagens `latest`, além de poder limitar imagens, redes, volumes, dispositivos e capacidades. Há uma política global e substituições por worker; uma alteração renderizada e o despacho de [jobs agendados](../reference/jobs.md) continuam sujeitos às mesmas regras. Veja [Política de deploy](../reference/policies.md) para a referência completa de listas de permissão, flags e herança.
 
 ## Auditoria
 

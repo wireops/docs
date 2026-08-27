@@ -21,19 +21,34 @@ wireops é um controlador GitOps auto-hospedado que mantém stacks Docker Compos
 
 <div class="feature-grid" markdown>
 <div markdown>
-## Compose, sem manifesto novo
+## :fontawesome-brands-docker: Compose, sem manifesto novo
 
-Implante os arquivos Compose que já vivem no Git. O wireops renderiza e aplica a configuração pelos workers conectados.
+Implante os arquivos Compose que já vivem no [Git](docs/reference/business-flows.md), sem formato novo pra aprender.
 </div>
 <div markdown>
-## Um servidor, vários hosts
+## :material-lan: Um servidor, vários hosts
 
-Workers se conectam de saída por WebSocket autenticado. Direcione stacks e jobs pelos seus tags.
+Workers se conectam de saída por WebSocket autenticado, direcionados por [tags](docs/reference/architecture.md).
 </div>
 <div markdown>
-## Proteções incluídas
+## :material-clock-outline: Jobs agendados
 
-Use RBAC, auditoria, política de deploy, segredos criptografados, SSO, backups e lint estático do Compose em um só lugar.
+Rode containers cron para backup e limpeza, definidos por um [`job.yaml`](docs/reference/jobs.md) no Git.
+</div>
+<div markdown>
+## :material-shield-check-outline: Política de deploy
+
+Bloqueia containers privilegiados, volumes de host e imagens sem tag fixa, [fail-closed](docs/reference/policies.md) por worker.
+</div>
+<div markdown>
+## :material-key-variant: Segredos & auditoria
+
+Segredos criptografados, perfis de RBAC e [auditoria completa](docs/security/access-control-and-audit.md), prontos de fábrica.
+</div>
+<div markdown>
+## :material-robot-outline: Servidor MCP
+
+Deixe Claude, Cursor e outros [assistentes de IA](docs/reference/mcp-server.md) consultarem stacks, jobs e logs.
 </div>
 </div>
 
@@ -42,6 +57,7 @@ Use RBAC, auditoria, política de deploy, segredos criptografados, SSO, backups 
 - Instalação nova: siga o [início rápido](docs/getting-started/quickstart.md).
 - Instância de produção: leia o [checklist de produção](docs/operations/production.md).
 - Endpoint ou configuração: consulte a [referência](docs/reference/architecture.md).
+- Quer um assistente de IA operando? Configure o [servidor MCP](docs/reference/mcp-server.md).
 
 !!! note "Escopo do projeto"
 

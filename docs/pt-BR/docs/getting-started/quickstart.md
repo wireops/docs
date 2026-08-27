@@ -13,24 +13,50 @@ Mantenha servidor e workers na mesma release. Consulte [compatibilidade](../oper
 
 ## 1. Inicie o servidor
 
-Gere a chave de criptografia e configure o ambiente de exemplo:
+Gere a chave de criptografia:
 
 ```bash
 openssl rand -hex 32
-cp example/.env.example example/.env
-cd example
-docker compose up -d wireops
 ```
 
-Defina `SECRET_KEY` com a saída do comando e um `BOOTSTRAP_TOKEN` forte, de uso único. Abra `http://localhost:8090/setup`, informe o token e crie o primeiro administrador. Não existem credenciais padrão.
+Use essa saída em `SECRET_KEY`, defina um `BOOTSTRAP_TOKEN` forte de uso único, e inicie o servidor.
+
+O container do servidor roda como UID/GID `1000`, não root. No Linux, crie o diretório de dados e ceda a posse antes, ou o servidor falha com `permission denied` ao criar `pb_data`:
+
+```bash
+mkdir -p data
+sudo chown -R 1000:1000 data
+```
+
+```bash
+docker run -d --name wireops \
+  -p 8090:8090 -p 8443:8443 \
+  -v "$(pwd)/data:/data" \
+  -e SECRET_KEY=cole-a-chave-gerada \
+  -e BOOTSTRAP_TOKEN=um-token-forte-de-uso-unico \
+  -e APP_URL=http://localhost:8090 \
+  ghcr.io/wireops/server:latest
+```
+
+Prefere Compose? Veja o [`docker-compose.yml` de exemplo](https://github.com/wireops/wireops/blob/main/example/docker-compose.yml). Copie `example/.env.example` para `example/.env`, preencha as mesmas variáveis e rode `docker compose up -d wireops` dentro de `example/`. Veja [solução de problemas](../operations/troubleshooting.md) se o container continuar sem conseguir escrever em `data/`.
+
+Abra `http://localhost:8090/setup`, informe o token e crie o primeiro administrador. Não existem credenciais padrão.
 
 ## 2. Conecte um worker
 
 Na interface, abra **Workers → Add Worker** e copie o token. No host do worker:
 
 ```bash
-WORKER_TOKEN=cole-o-token WORKER_TAGS=prod,eu-west-1 docker compose up -d wireops-worker
+docker run -d --name wireops-worker \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --group-add "$(stat -c '%g' /var/run/docker.sock)" \
+  -e SERVER_URL=http://host-do-seu-servidor:8443 \
+  -e WORKER_TOKEN=cole-o-token \
+  -e WORKER_TAGS=prod,eu-west-1 \
+  ghcr.io/wireops/worker:latest
 ```
+
+`--group-add` (ou `DOCKER_GID` no Compose) só é necessário no Linux, quando o socket do Docker não é acessível por padrão. Veja [solução de problemas](../operations/troubleshooting.md) se o worker reportar erro de permissão. O mesmo [`docker-compose.yml` de exemplo](https://github.com/wireops/wireops/blob/main/example/docker-compose.yml) tem um serviço `wireops-worker` caso prefira rodar via Compose.
 
 Tags selecionam os workers elegíveis para stacks e jobs. Confirme que o worker fica `ACTIVE` na interface.
 
@@ -42,4 +68,6 @@ Tags selecionam os workers elegíveis para stacks e jobs. Confirme que o worker 
 4. Dispare a sincronização ou ative a sincronização automática.
 
 O worker recebe o Compose renderizado e o implanta localmente. Leia as orientações de [produção](../operations/production.md) antes de expor uma carga real.
+
+Quer um assistente de IA operando o wireops? Configure o [servidor MCP](../reference/mcp-server.md).
 

@@ -4,6 +4,12 @@
   --wireops-carbon-900: #262643;
   --wireops-carbon-800: #2e2e52;
   --wireops-blue: #5da8ff;
+  --wireops-blue-pale: #8dc3e7;
+  --wireops-gold: #d9b04c;
+  --wireops-gold-light: #e8c568;
+  --wireops-gold-deep: #8a6d1a;
+  --wireops-blue-deep: #1d5fa8;
+  --wireops-blue-deeper: #14456e;
   --wireops-ice: #c1d1db;
 }
 
@@ -26,6 +32,27 @@
   --md-admonition-fg-color: #f7f7fb;
   --md-code-bg-color: var(--wireops-carbon-900);
   --md-code-fg-color: #f7f7fb;
+  --md-typeset-table-color: rgba(255, 255, 255, .18);
+  --md-typeset-table-color--light: rgba(255, 255, 255, .05);
+  /* Material only ever computes these against the *default* (light) scheme's
+     fg colors, because they're declared once on :root as var(--md-default-fg-color--light)
+     and never redeclared for a custom, non-"slate" scheme — so without an explicit
+     redeclaration here (on the same element as our fg overrides above), pygments
+     comments/operators/punctuation stay dark-on-dark. */
+  --md-code-hl-comment-color: var(--md-default-fg-color--light);
+  --md-code-hl-generic-color: var(--md-default-fg-color--light);
+  --md-code-hl-operator-color: var(--md-default-fg-color--light);
+  --md-code-hl-punctuation-color: var(--md-default-fg-color--light);
+  --md-code-hl-variable-color: var(--md-default-fg-color--light);
+  --md-code-hl-name-color: var(--md-code-fg-color);
+  /* Recolor pygments tokens to the wireops palette (gold + blues) instead of
+     Material's default red/purple/green, which clash with the brand. */
+  --md-code-hl-number-color: var(--wireops-gold);
+  --md-code-hl-special-color: var(--wireops-gold-light);
+  --md-code-hl-string-color: var(--wireops-blue-pale);
+  --md-code-hl-keyword-color: var(--wireops-blue);
+  --md-code-hl-function-color: #7fbdff;
+  --md-code-hl-constant-color: var(--wireops-blue-pale);
 }
 
 [data-md-color-scheme="wireops-dark"] .md-typeset .admonition,
@@ -47,6 +74,14 @@
   --md-primary-fg-color--dark: #171724;
   --md-accent-fg-color: #b98000;
   --md-typeset-a-color: #256d85;
+  /* Same wireops palette (gold + blues) as the dark scheme, in shades dark
+     enough to stay readable on a light code background. */
+  --md-code-hl-number-color: var(--wireops-gold-deep);
+  --md-code-hl-special-color: #b98000;
+  --md-code-hl-string-color: var(--wireops-blue-deep);
+  --md-code-hl-keyword-color: var(--wireops-blue-deeper);
+  --md-code-hl-function-color: #256d85;
+  --md-code-hl-constant-color: var(--wireops-blue-deep);
 }
 
 .md-header, .md-tabs { background: var(--wireops-carbon-950); }
@@ -61,15 +96,10 @@
   letter-spacing: -.06em;
   text-shadow: 0 0 1rem rgba(250, 204, 21, .12);
 }
-.md-nav--primary > .md-nav__title {
-  background: linear-gradient(100deg, #facc15 4%, #d5cc83 48%, #8dc3e7 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: 900;
-  letter-spacing: -.05em;
-}
-.md-nav--primary > .md-nav__title .md-logo {
+/* The primary sidebar's own title (logo + "wireops") and its first "Home"
+   entry just duplicate the header logo and the current page — drop both. */
+.md-nav--primary > .md-nav__title,
+.md-nav--primary > .md-nav__list > .md-nav__item:first-child {
   display: none;
 }
 .md-typeset a { font-weight: 600; }
@@ -85,9 +115,11 @@
 .hero__art p { margin: 0; }
 .hero__art img.hero__logo { filter: drop-shadow(0 0 14px rgba(255, 198, 0, .48)); height: 9rem; max-width: 9rem !important; object-fit: contain; width: 9rem !important; }
 .brand-wordmark { background: linear-gradient(100deg, #facc15 4%, #d5cc83 48%, #8dc3e7 100%); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1.75rem; font-weight: 900; letter-spacing: -.06em; line-height: 1; }
-.feature-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, 1fr); margin: 2rem 0; }
-.feature-grid > div { border: 1px solid var(--md-default-fg-color--lighter); border-radius: .5rem; padding: 1.2rem; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.feature-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 2rem 0; }
+.feature-grid > div { border: 1px solid color-mix(in srgb, var(--md-default-fg-color--lighter) 35%, transparent); border-radius: .5rem; padding: 1.2rem; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
 .feature-grid h2 { margin-top: 0; font-size: 1.1rem; }
+.feature-grid h2 .twemoji { color: var(--wireops-yellow); margin-right: .4rem; }
+.feature-grid h2 .twemoji svg { height: 1.25em; width: 1.25em; }
 @media (hover: hover) {
   .feature-grid > div:hover {
     border-color: var(--wireops-blue);
