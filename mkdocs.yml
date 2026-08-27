@@ -1,0 +1,141 @@
+site_name: wireops
+site_url: https://wireops.dev
+site_description: Documentation for wireops, a self-hosted GitOps controller for Docker Compose.
+site_author: wireops
+repo_url: https://github.com/wireops/wireops
+repo_name: wireops/wireops
+edit_uri: https://github.com/wireops/docs/edit/main/docs/
+docs_dir: docs
+site_dir: site
+strict: true
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: en
+  logo: assets/images/logo.png
+  favicon: assets/images/logo.png
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: wireops-light
+      toggle:
+        icon: material/weather-sunny
+        name: Use dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: wireops-dark
+      toggle:
+        icon: material/weather-night
+        name: Use light mode
+  features:
+    - navigation.footer
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+          site_name: wireops
+        - locale: pt-BR
+          name: Português (Brasil)
+          build: true
+          site_name: wireops
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/wireops/wireops
+      name: wireops on GitHub
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: Português (Brasil)
+      link: /pt-BR/
+      lang: pt-BR
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Documentation:
+      - Overview: docs/index.md
+      - Get started:
+          - Quick start: docs/getting-started/quickstart.md
+      - Operations:
+          - Production: docs/operations/production.md
+          - Upgrading: docs/operations/upgrading.md
+          - Compatibility: docs/operations/compatibility.md
+          - Disaster recovery: docs/operations/disaster-recovery.md
+          - Troubleshooting: docs/operations/troubleshooting.md
+      - Security:
+          - Security reporting: docs/security/reporting.md
+          - Access control and audit: docs/security/access-control-and-audit.md
+      - Reference:
+          - Architecture: docs/reference/architecture.md
+          - Business flows: docs/reference/business-flows.md
+          - Data model: docs/reference/data-model.md
+          - API reference: docs/reference/api-reference.md
+          - Environment variables: docs/reference/environment-variables.md
+          - Observability: docs/reference/observability.md
+          - SSO: docs/reference/sso.md
+          - MCP server: docs/reference/mcp-server.md
+      - Integrations:
+          - Overview: docs/integrations/index.md
+          - Reverse proxy:
+              - Traefik: docs/integrations/reverse-proxy/traefik.md
+              - Caddy: docs/integrations/reverse-proxy/caddy.md
+              - Nginx Proxy Manager: docs/integrations/reverse-proxy/nginx-proxy-manager.md
+          - Logging:
+              - Dozzle: docs/integrations/logging/dozzle.md
+          - Notifications:
+              - Events: docs/integrations/notifications.md
+              - Webhook: docs/integrations/notifications/webhook.md
+              - Discord: docs/integrations/notifications/discord.md
+              - Slack: docs/integrations/notifications/slack.md
+              - ntfy: docs/integrations/notifications/ntfy.md
+          - Secret backends:
+              - HashiCorp Vault: docs/integrations/secrets/vault.md
+              - Infisical: docs/integrations/secrets/infisical.md
+              - SOPS + age: docs/integrations/secrets/sops.md
+          - Storage:
+              - S3-compatible storage: docs/integrations/storage/s3.md
+          - Source control:
+              - GitHub OAuth: docs/integrations/source-control/github.md
+      - Developers:
+          - Repository layout: docs/developers/repository-layout.md
+          - Coding and testing: docs/developers/coding-conventions-and-testing.md
+          - Add an integration: docs/developers/adding-an-integration.md
+      - Roadmap:
+          - Feature proposals: docs/roadmap/feature-proposals.md
+
+copyright: Copyright © 2026 wireops contributors · AGPL-3.0
