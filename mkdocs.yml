@@ -51,6 +51,16 @@ plugins:
           name: Português (Brasil)
           build: true
           site_name: wireops
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: fade
+      slide_effect: slide
+      zoomable: true
+      draggable: true
+      auto_caption: true
+      skip_classes:
+        - hero__logo
 
 markdown_extensions:
   - admonition
@@ -65,6 +75,9 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - toc:
       permalink: true
 
@@ -89,8 +102,7 @@ nav:
   - Home: index.md
   - Documentation:
       - Overview: docs/index.md
-      - Get started:
-          - Quick start: docs/getting-started/quickstart.md
+      - Quick start: docs/getting-started/quickstart.md
       - Operations:
           - Production: docs/operations/production.md
           - Upgrading: docs/operations/upgrading.md
@@ -103,6 +115,8 @@ nav:
       - Reference:
           - Architecture: docs/reference/architecture.md
           - Business flows: docs/reference/business-flows.md
+          - Scheduled jobs: docs/reference/jobs.md
+          - Deploy policy: docs/reference/policies.md
           - Data model: docs/reference/data-model.md
           - API reference: docs/reference/api-reference.md
           - Environment variables: docs/reference/environment-variables.md
