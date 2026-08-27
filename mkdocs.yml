@@ -51,6 +51,14 @@ plugins:
           name: Português (Brasil)
           build: true
           site_name: wireops
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: fade
+      slide_effect: slide
+      zoomable: true
+      draggable: true
+      auto_caption: true
 
 markdown_extensions:
   - admonition

@@ -38,7 +38,7 @@ Run cron containers for backups and cleanup, defined by a [`job.yaml`](docs/refe
 <div markdown>
 ## :material-shield-check-outline: Deploy policy
 
-Block privileged containers, host mounts, and unpinned images, [fail-closed](docs/reference/policies.md) per worker.
+Block privileged containers, host mounts, and images with no tag or tagged `:latest`, [fail-closed](docs/reference/policies.md) per worker.
 </div>
 <div markdown>
 ## :material-key-variant: Secrets & audit
@@ -50,6 +50,42 @@ Encrypted secrets, RBAC roles, and a full [audit trail](docs/security/access-con
 
 Let Claude, Cursor, and other [AI assistants](docs/reference/mcp-server.md) query stacks, jobs, and logs.
 </div>
+</div>
+
+## See it in action
+
+*Click any screenshot to zoom, then use the arrows to browse.*
+
+<div class="screenshot-grid" markdown>
+<figure class="screenshot" markdown>
+![Stacks overview](assets/images/screenshots/stacks-overview.png){ data-gallery="wireops-desktop" }
+<figcaption markdown>**Stacks**: every Compose deployment, sync/deploy status, and assigned worker.</figcaption>
+</figure>
+<figure class="screenshot" markdown>
+![Stack dependency graph](assets/images/screenshots/dependency-graph.png){ data-gallery="wireops-desktop" }
+<figcaption markdown>**Dependency graph**: services, networks, and volumes per stack.</figcaption>
+</figure>
+<figure class="screenshot" markdown>
+![Cron jobs](assets/images/screenshots/jobs.png){ data-gallery="wireops-desktop" }
+<figcaption markdown>**Jobs**: cron-scheduled one-shot containers with run history.</figcaption>
+</figure>
+<figure class="screenshot" markdown>
+![Integrations](assets/images/screenshots/integrations.png){ data-gallery="wireops-desktop" }
+<figcaption markdown>**Integrations**: Traefik, Caddy, Dozzle, Vault, Infisical, SOPS, and more.</figcaption>
+</figure>
+</div>
+
+<div class="screenshot-grid screenshot-grid--compact" markdown>
+<figure class="screenshot" markdown>
+![Mobile dashboard](assets/images/screenshots/mobile-dashboard.png){ data-gallery="wireops-mobile" }
+<figcaption markdown>**Mobile-friendly UI**: manage stacks and secrets from your phone.</figcaption>
+</figure>
+<figure class="screenshot" markdown>
+![Mobile stack detail](assets/images/screenshots/mobile-stack-detail.png){ data-gallery="wireops-mobile" }
+</figure>
+<figure class="screenshot" markdown>
+![Mobile secrets management](assets/images/screenshots/mobile-secrets.png){ data-gallery="wireops-mobile" }
+</figure>
 </div>
 
 ## Start where you are

@@ -37,8 +37,8 @@ configs:
 | `tags` | Não | Seleciona quais workers são elegíveis para rodar o job (veja [modos de despacho](#modos-de-despacho)). Vazio significa qualquer worker. |
 | `group` | Não | Rótulo livre para organizar jobs relacionados na interface. Apenas cosmético. |
 | `mode` | Não | `once` (padrão) ou `once_all`, veja abaixo. |
-| `volumes` | Não | Bind mounts ou volumes nomeados, mesma sintaxe do Compose. Sujeitos à política (`BlockHostVolumes`, `AllowedVolumes`). |
-| `network` | Não | Rede Docker do container do job. Sujeita à política (`AllowedNetworks`). |
+| `volumes` | Não | Bind mounts ou volumes nomeados, mesma sintaxe do Compose. Sujeitos à política (`block_host_volumes`, `allowed_volumes`). |
+| `network` | Não | Rede Docker do container do job. Sujeita à política (`allowed_networks`). |
 | `resources.cpu` / `.memory` / `.timeout` | **Sim, os três** | Obrigatórios para que um job com defeito não consuma os recursos do host indefinidamente. `timeout` cancela o container se ele exceder o tempo. |
 | `configs` | Não | Arquivos versionados no Git, resolvidos pelo servidor e montados (somente leitura, ou conforme `mode`) em `target`. Como jobs não têm arquivo Compose, alvo e modo são explícitos aqui, diferente do elemento nativo `configs:` de uma stack. |
 

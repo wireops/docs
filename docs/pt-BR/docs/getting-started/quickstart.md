@@ -35,8 +35,10 @@ docker run -d --name wireops \
   -e SECRET_KEY=cole-a-chave-gerada \
   -e BOOTSTRAP_TOKEN=um-token-forte-de-uso-unico \
   -e APP_URL=http://localhost:8090 \
-  ghcr.io/wireops/server:latest
+  ghcr.io/wireops/server:1.0.0
 ```
+
+`APP_URL=http://localhost:8090` só funciona se você abrir a interface na mesma máquina onde o servidor roda. Se for acessar de outro host, defina `APP_URL` com esse endereço alcançável (ex.: `http://192.168.1.100:8090`), ou sua origem `https://` depois de colocar TLS na frente.
 
 Prefere Compose? Veja o [`docker-compose.yml` de exemplo](https://github.com/wireops/wireops/blob/main/example/docker-compose.yml). Copie `example/.env.example` para `example/.env`, preencha as mesmas variáveis e rode `docker compose up -d wireops` dentro de `example/`. Veja [solução de problemas](../operations/troubleshooting.md) se o container continuar sem conseguir escrever em `data/`.
 
@@ -53,8 +55,10 @@ docker run -d --name wireops-worker \
   -e SERVER_URL=http://host-do-seu-servidor:8443 \
   -e WORKER_TOKEN=cole-o-token \
   -e WORKER_TAGS=prod,eu-west-1 \
-  ghcr.io/wireops/worker:latest
+  ghcr.io/wireops/worker:1.0.0
 ```
+
+Fixe o worker exatamente na mesma versão do servidor (`1.0.0` acima); veja [compatibilidade](../operations/compatibility.md) pra entender por que uma dupla divergente não é suportada. A URL `http://` acima só serve numa rede privada ou no mesmo host Docker do servidor; para um worker em outra rede, use `https://` com [TLS habilitado](../operations/production.md#rede-e-acesso) no servidor.
 
 `--group-add` (ou `DOCKER_GID` no Compose) só é necessário no Linux, quando o socket do Docker não é acessível por padrão. Veja [solução de problemas](../operations/troubleshooting.md) se o worker reportar erro de permissão. O mesmo [`docker-compose.yml` de exemplo](https://github.com/wireops/wireops/blob/main/example/docker-compose.yml) tem um serviço `wireops-worker` caso prefira rodar via Compose.
 

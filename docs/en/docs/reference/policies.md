@@ -19,7 +19,7 @@ Policy can be disabled entirely (global `enabled: false`), in which case every c
 
 ## Allowlists
 
-Four resource types can be restricted to an explicit allowlist: **images**, **volumes**, **networks**, plus **added capabilities**, **devices**, and **security-opt** entries.
+Six resource types can be restricted to an explicit allowlist: **images**, **volumes**, **networks**, plus **added capabilities**, **devices**, and **security-opt** entries.
 
 - An empty list means open policy, so everything of that type is permitted.
 - The moment at least one entry is present, only what's listed is allowed; everything else is rejected.

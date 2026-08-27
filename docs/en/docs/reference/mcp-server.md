@@ -33,6 +33,6 @@ claude mcp add --transport http wireops http://localhost:8091/mcp \
 
 Run `claude mcp list` to confirm it's connected, then just ask Claude things like "list my stacks" or "why did the last sync on X fail." It discovers the available tools on its own.
 
-Other MCP-compatible clients (Cursor, Windsurf, the MCP Inspector, custom integrations) can connect the same way, pointing at `http://<host>:8091/mcp` with the same API key header. Most of them use the same config shape shown above, with only minor naming differences.
+Other MCP-compatible clients (Cursor, Windsurf, the MCP Inspector, custom integrations) can connect the same way, pointing at the wireops-mcp URL with the same API key header. Most of them use the same config shape shown above, with only minor naming differences. `http://` is fine on localhost or a private network; if the client reaches wireops-mcp over an untrusted network, put TLS in front of it (e.g. a reverse proxy) and connect over `https://` instead, since the API key travels in a plain header.
 
 As with any API key, keep it out of anything that lands in Git. Pull it from a secrets manager or an env var at runtime instead.

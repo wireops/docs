@@ -17,7 +17,7 @@ A política pode ser desabilitada por completo (`enabled: false` global), e toda
 
 ## Listas de permissão
 
-Quatro tipos de recurso aceitam lista de permissão explícita: **imagens**, **volumes**, **redes**, além de **capabilities adicionadas**, **devices** e entradas de **security-opt**.
+Seis tipos de recurso aceitam lista de permissão explícita: **imagens**, **volumes**, **redes**, além de **capabilities adicionadas**, **devices** e entradas de **security-opt**.
 
 - Lista vazia significa política aberta, então tudo daquele tipo é permitido.
 - A partir do momento em que há ao menos uma entrada, só o que está listado é permitido; o resto é rejeitado.

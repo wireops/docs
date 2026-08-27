@@ -39,8 +39,8 @@ configs:
 | `tags` | No | Selects which workers are eligible to run the job (see [Dispatch](#dispatch-modes) below). Empty means any worker. |
 | `group` | No | Free-form label for organizing related jobs in the UI. Purely cosmetic. |
 | `mode` | No | `once` (default) or `once_all`, see below. |
-| `volumes` | No | Bind mounts or named volumes, same syntax as Compose. Subject to worker policy (`BlockHostVolumes`, `AllowedVolumes`). |
-| `network` | No | Docker network to attach the job container to. Subject to worker policy (`AllowedNetworks`). |
+| `volumes` | No | Bind mounts or named volumes, same syntax as Compose. Subject to worker policy (`block_host_volumes`, `allowed_volumes`). |
+| `network` | No | Docker network to attach the job container to. Subject to worker policy (`allowed_networks`). |
 | `resources.cpu` / `.memory` / `.timeout` | **Yes, all three** | Mandatory so a runaway job can't quietly eat a host's resources. `timeout` cancels the container if it runs longer. |
 | `configs` | No | Git-committed files resolved server-side and bind-mounted read-only (or per `mode`) into the container at `target`. Jobs have no compose file, so target and mode are spelled out explicitly here, unlike a stack's native `configs:` element. |
 
