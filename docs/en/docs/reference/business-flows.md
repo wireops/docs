@@ -33,8 +33,22 @@ If a worker goes quiet (misses heartbeats), it shows as offline in the UI, and a
 
 Beyond keeping stacks in sync, wireops can run one-off Docker containers on a cron schedule: nightly database backups, cleanup scripts, health-check pings, driven entirely by a `job.yaml` file committed to a repo, with no separate UI config to drift out of sync with it. See [Scheduled Jobs](jobs.md) for the full field reference, dispatch modes, and how policy enforcement fits in.
 
-## Two smaller conveniences worth knowing about
+## A few smaller conveniences worth knowing about
 
 **Render overrides.** Sometimes you want to swap a service's image, ports, or network without committing anything to Git (e.g. testing a hotfix image). You can do that from the stack's detail page. It only affects what gets deployed, never what's in your repo, and it's off by default until an admin enables the "Allow render overrides" [policy](policies.md) flag.
 
 **Container icons.** If you want a nicer icon next to your containers in the UI instead of a generic default, add a `customization.image.slug` label to a service in your compose file (matching an identifier from the [selfh.st/icons](https://selfh.st/icons/) catalog) and wireops will pick it up automatically.
+
+**Init containers.** A service that's meant to run once and exit — a database migration, a seed script, any one-shot job — isn't the same as a crashed long-running service, but wireops can't tell the difference on its own: any expected container that isn't `running` normally counts as missing, which drags the whole stack's status to degraded. Add a `customization.init: "true"` label to that service and wireops exempts it from that rule: exiting with code 0 (or being gone entirely once Docker cleans it up) is treated as a healthy, expected end state. It still counts against the stack if the container exits with a non-zero code or gets stuck in a restart loop.
+
+```yaml
+services:
+  migrate:
+    image: myapp:1.4.0
+    command: ["./migrate", "up"]
+    restart: "no"
+    labels:
+      - "customization.init=true"
+```
+
+Only label services that are genuinely expected to exit on their own — putting it on a long-running service would hide a real crash instead of catching it.
