@@ -2,42 +2,44 @@ Home: [[Home]]
 
 # Environment Variables
 
-## Multiline application variables
+## Multiline values
 
-Stack, job, and global variable values can contain multiple lines, including JSON and PEM keys. Click **Expand value** or paste multiline content into a value field to open the larger editor. **Done** keeps the edited value in the form; use the form's save action to persist it. **Cancel** in the expanded editor restores its previous value.
+You can use values with multiple lines in stack, job, and global variables, such as JSON credentials, certificates, and private keys.
 
-Paste the original content without adding outer quotes, manually escaping line breaks, or converting it to base64. Mark credentials as **Secret**. Stored internal secrets stay masked until an administrator reveals them; an empty replacement value keeps an existing secret unchanged. Vault and Infisical continue using their reference pickers and can supply multiline values at execution time.
+1. Create or edit a variable, using the name required by your application.
+2. Click **Expand value** and paste the complete content as it is. Pasting multiple lines also opens the editor automatically.
+3. Mark sensitive values as **Secret**.
+4. Click **Done**, then save the variable in the form.
 
-For stack bulk editing and `.env` import, enclose a multiline value in quotes. Single quotes preserve JSON backslashes literally:
+You do not need to add quotes or change the line breaks in the value field. **Cancel** in the expanded editor restores the previous value. When editing an existing secret, leave its value empty to keep it unchanged.
 
-```dotenv
-GCP_SERVICE_ACCOUNT_JSON='{
-  "type": "service_account",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nFAKE-KEY-FOR-EXAMPLE\n-----END PRIVATE KEY-----\n"
-}'
-```
+### Using the value in a stack
 
-This is an illustrative fragment, not a usable credential. The bulk editor also accepts double-quoted values with escaped newlines. Unclosed quotes are reported before saving.
-
-### GCP service accounts
-
-In a stack's Compose file, expose the variable to the service that consumes it:
+Add the variable to the application's service in your Compose file. For example:
 
 ```yaml
-services:
-  app:
-    image: your-application:1.0.0
-    environment:
-      GCP_SERVICE_ACCOUNT_JSON: ${GCP_SERVICE_ACCOUNT_JSON}
+environment:
+  GCP_SERVICE_ACCOUNT_JSON: ${GCP_SERVICE_ACCOUNT_JSON}
 ```
 
-`GCP_SERVICE_ACCOUNT_JSON` is an example name: use the name supported by your application. The application must explicitly parse the JSON from that variable. Real line breaks in formatted JSON are preserved, while the literal `\n` inside `private_key` remains a JSON escape until the application parses the JSON. Jobs receive configured variables directly in the container environment.
+Replace `GCP_SERVICE_ACCOUNT_JSON` with the variable name your application supports. Jobs receive their configured variables automatically.
 
-**`GOOGLE_APPLICATION_CREDENTIALS` expects a file path, not JSON content.** Applications using that mechanism still need the credentials file available inside the container, with the variable pointing to its container path. wireops does not automatically create or mount a credentials file from an environment variable.
+### GCP credentials
 
-See [Docker Compose environment-file syntax](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/#env-file-syntax) and [Google Application Default Credentials](https://docs.cloud.google.com/docs/authentication/application-default-credentials).
+If your application accepts a service account JSON in an environment variable, paste the entire JSON file into its value field and mark it as **Secret**.
 
-Update the server and workers together when adopting multiline values so worker output redaction includes the decoded values and their individual lines. Existing value-size limits and access rules still apply.
+If the application asks for **`GOOGLE_APPLICATION_CREDENTIALS`**, provide the **path to the credentials file inside the container**. Pasting JSON into that variable will not work. Make the file available to the container as described in your application's setup guide.
+
+### Importing a `.env` file or editing in bulk
+
+Wrap values that span several lines in single quotes. For example:
+
+```dotenv
+SETTINGS='{
+  "language": "en",
+  "timezone": "UTC"
+}'
+```
 
 ## Server
 

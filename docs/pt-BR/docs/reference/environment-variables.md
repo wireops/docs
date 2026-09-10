@@ -1,41 +1,43 @@
 # Variáveis de ambiente
 
-## Variáveis multilinha da aplicação
+## Valores com várias linhas
 
-Valores de variáveis de stacks, jobs e variáveis globais podem conter várias linhas, incluindo JSON e chaves PEM. Clique em **Expand value** ou cole um conteúdo multilinha no campo de valor para abrir o editor maior. **Done** mantém o valor editado no formulário; use a ação de salvar do formulário para persistir. **Cancel**, dentro do editor expandido, restaura o valor anterior.
+Você pode usar valores com várias linhas em variáveis de stacks, jobs e variáveis globais, como credenciais JSON, certificados e chaves privadas.
 
-Cole o conteúdo original sem adicionar aspas externas, escapar quebras manualmente ou converter para base64. Marque credenciais como **Secret**. Secrets internos salvos ficam ocultos até a revelação por um administrador; deixar a substituição vazia mantém um secret existente. Vault e Infisical continuam usando os seletores de referência e podem fornecer valores multilinha na execução.
+1. Crie ou edite uma variável com o nome exigido pela sua aplicação.
+2. Clique em **Expand value** e cole o conteúdo completo, sem alterá-lo. Colar várias linhas também abre o editor automaticamente.
+3. Marque valores sensíveis como **Secret**.
+4. Clique em **Done** e depois salve a variável no formulário.
 
-Na edição em lote de stacks e na importação de `.env`, coloque o valor multilinha entre aspas. Aspas simples preservam literalmente as barras do JSON:
+Não é necessário adicionar aspas nem alterar as quebras de linha no campo de valor. **Cancel**, dentro do editor expandido, restaura o valor anterior. Ao editar um secret existente, deixe o valor vazio para mantê-lo como está.
 
-```dotenv
-GCP_SERVICE_ACCOUNT_JSON='{
-  "type": "service_account",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nCHAVE-FICTICIA-DE-EXEMPLO\n-----END PRIVATE KEY-----\n"
-}'
-```
+### Usar o valor em uma stack
 
-Esse fragmento é ilustrativo e não constitui uma credencial utilizável. O editor em lote também aceita valores entre aspas duplas com quebras escapadas. Aspas não fechadas são apontadas antes de salvar.
-
-### Service accounts da GCP
-
-No Compose da stack, exponha a variável ao serviço que a consome:
+Adicione a variável ao serviço da aplicação no seu arquivo Compose. Por exemplo:
 
 ```yaml
-services:
-  app:
-    image: sua-aplicacao:1.0.0
-    environment:
-      GCP_SERVICE_ACCOUNT_JSON: ${GCP_SERVICE_ACCOUNT_JSON}
+environment:
+  GCP_SERVICE_ACCOUNT_JSON: ${GCP_SERVICE_ACCOUNT_JSON}
 ```
 
-`GCP_SERVICE_ACCOUNT_JSON` é um nome de exemplo: use o nome aceito pela sua aplicação. A aplicação precisa interpretar explicitamente o JSON dessa variável. Quebras reais do JSON formatado são preservadas; o `\n` literal de `private_key` continua como escape JSON até a aplicação interpretar o documento. Jobs recebem as variáveis configuradas diretamente no ambiente do container.
+Substitua `GCP_SERVICE_ACCOUNT_JSON` pelo nome de variável aceito pela aplicação. Jobs recebem automaticamente as variáveis configuradas.
 
-**`GOOGLE_APPLICATION_CREDENTIALS` espera um caminho de arquivo, não o conteúdo JSON.** Aplicações que utilizam esse mecanismo ainda precisam disponibilizar o arquivo de credenciais dentro do container e apontar a variável para seu caminho interno. O wireops não cria nem monta automaticamente um arquivo de credenciais a partir de uma variável de ambiente.
+### Credenciais da GCP
 
-Consulte a [sintaxe de arquivos de ambiente do Docker Compose](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/#env-file-syntax) e a [documentação do Google Application Default Credentials](https://docs.cloud.google.com/docs/authentication/application-default-credentials).
+Se a aplicação aceita o JSON de uma service account em uma variável de ambiente, cole o arquivo JSON inteiro no campo de valor e marque como **Secret**.
 
-Atualize servidor e workers juntos ao adotar valores multilinha, para que a ocultação na saída dos workers inclua os valores decodificados e suas linhas individuais. Os limites de tamanho e as regras de acesso existentes continuam valendo.
+Se a aplicação pede **`GOOGLE_APPLICATION_CREDENTIALS`**, informe o **caminho do arquivo de credenciais dentro do container**. Colar o JSON nessa variável não funciona. Disponibilize o arquivo no container conforme o guia de configuração da sua aplicação.
+
+### Importar um arquivo `.env` ou editar em lote
+
+Coloque valores com várias linhas entre aspas simples. Por exemplo:
+
+```dotenv
+SETTINGS='{
+  "language": "pt-BR",
+  "timezone": "America/Sao_Paulo"
+}'
+```
 
 ## Servidor
 
