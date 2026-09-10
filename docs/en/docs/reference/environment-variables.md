@@ -2,6 +2,43 @@ Home: [[Home]]
 
 # Environment Variables
 
+## Multiline application variables
+
+Stack, job, and global variable values can contain multiple lines, including JSON and PEM keys. Click **Expand value** or paste multiline content into a value field to open the larger editor. **Done** keeps the edited value in the form; use the form's save action to persist it. **Cancel** in the expanded editor restores its previous value.
+
+Paste the original content without adding outer quotes, manually escaping line breaks, or converting it to base64. Mark credentials as **Secret**. Stored internal secrets stay masked until an administrator reveals them; an empty replacement value keeps an existing secret unchanged. Vault and Infisical continue using their reference pickers and can supply multiline values at execution time.
+
+For stack bulk editing and `.env` import, enclose a multiline value in quotes. Single quotes preserve JSON backslashes literally:
+
+```dotenv
+GCP_SERVICE_ACCOUNT_JSON='{
+  "type": "service_account",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nFAKE-KEY-FOR-EXAMPLE\n-----END PRIVATE KEY-----\n"
+}'
+```
+
+This is an illustrative fragment, not a usable credential. The bulk editor also accepts double-quoted values with escaped newlines. Unclosed quotes are reported before saving.
+
+### GCP service accounts
+
+In a stack's Compose file, expose the variable to the service that consumes it:
+
+```yaml
+services:
+  app:
+    image: your-application:1.0.0
+    environment:
+      GCP_SERVICE_ACCOUNT_JSON: ${GCP_SERVICE_ACCOUNT_JSON}
+```
+
+`GCP_SERVICE_ACCOUNT_JSON` is an example name: use the name supported by your application. The application must explicitly parse the JSON from that variable. Real line breaks in formatted JSON are preserved, while the literal `\n` inside `private_key` remains a JSON escape until the application parses the JSON. Jobs receive configured variables directly in the container environment.
+
+**`GOOGLE_APPLICATION_CREDENTIALS` expects a file path, not JSON content.** Applications using that mechanism still need the credentials file available inside the container, with the variable pointing to its container path. wireops does not automatically create or mount a credentials file from an environment variable.
+
+See [Docker Compose environment-file syntax](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/#env-file-syntax) and [Google Application Default Credentials](https://docs.cloud.google.com/docs/authentication/application-default-credentials).
+
+Update the server and workers together when adopting multiline values so worker output redaction includes the decoded values and their individual lines. Existing value-size limits and access rules still apply.
+
 ## Server
 
 | Variable | Required | Default | Description |
