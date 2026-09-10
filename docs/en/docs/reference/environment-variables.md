@@ -2,6 +2,45 @@ Home: [[Home]]
 
 # Environment Variables
 
+## Multiline values
+
+You can use values with multiple lines in stack, job, and global variables, such as JSON credentials, certificates, and private keys.
+
+1. Create or edit a variable, using the name required by your application.
+2. Click **Expand value** and paste the complete content as it is. Pasting multiple lines also opens the editor automatically.
+3. Mark sensitive values as **Secret**.
+4. Click **Done**, then save the variable in the form.
+
+You do not need to add quotes or change the line breaks in the value field. **Cancel** in the expanded editor restores the previous value. When editing an existing secret, leave its value empty to keep it unchanged.
+
+### Using the value in a stack
+
+Add the variable to the application's service in your Compose file. For example:
+
+```yaml
+environment:
+  GCP_SERVICE_ACCOUNT_JSON: ${GCP_SERVICE_ACCOUNT_JSON}
+```
+
+Replace `GCP_SERVICE_ACCOUNT_JSON` with the variable name your application supports. Jobs receive their configured variables automatically.
+
+### GCP credentials
+
+If your application accepts a service account JSON in an environment variable, paste the entire JSON file into its value field and mark it as **Secret**.
+
+If the application asks for **`GOOGLE_APPLICATION_CREDENTIALS`**, provide the **path to the credentials file inside the container**. Pasting JSON into that variable will not work. Make the file available to the container as described in your application's setup guide.
+
+### Importing a `.env` file or editing in bulk
+
+Wrap values that span several lines in single quotes. For example:
+
+```dotenv
+SETTINGS='{
+  "language": "en",
+  "timezone": "UTC"
+}'
+```
+
 ## Server
 
 | Variable | Required | Default | Description |
