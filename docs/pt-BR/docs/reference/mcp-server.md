@@ -37,6 +37,38 @@ Outros clientes compatíveis com MCP (Cursor, Windsurf, o MCP Inspector, integra
 
 Como qualquer chave de API, mantenha-a fora de tudo que vá para o Git. Busque-a de um gerenciador de segredos ou de uma variável de ambiente em tempo de execução.
 
+## Observação da frota e compatibilidade
+
+`get_stack_status` reúne o registro persistido da stack com uma observação de `health` **sob demanda**. Os sinais são propositalmente diferentes: `status` é o resultado do último sync/deploy; `health` é o que o Docker observa agora na revisão implantada. Uma consulta de saúde não inicia reconciliação, polling, sonda externa nem alerta.
+
+`health` pode ser `healthy`, `degraded`, `unhealthy`, `starting` ou `unknown`; inclui horário da observação e contagens de serviços problemáticos, ausentes e iniciando. Ele usa os serviços esperados na revisão implantada, ignora serviços com escala zero e considera saudável um init concluído (`customization.init`, saída 0). Worker offline, revisão implantada ausente ou falha de inspeção retornam `unknown` com um motivo, nunca uma conclusão otimista.
+
+Para uma visão compacta da frota, use `get_inventory`. Ele pagina stacks (50 por padrão, máximo 200) e aceita filtro de worker por ID/hostname e de grupo. Cada item traz versão/capabilities do worker, serviços atuais, saúde e recursos. A coleta limita a cinco comandos simultâneos, cinco segundos por comando e 25 segundos no total: um worker inacessível produz um item anotado, sem esconder os demais. A identidade de rede é `(worker_id, network.id)`; nomes Docker iguais em workers diferentes não formam uma rede compartilhada.
+
+`get_stack_resources` e os recursos do inventário incluem volumes nomeados, bind mounts e redes realmente ligadas aos containers, inclusive redes externas. Resultado vazio com `partial: false` é vazio confirmado. `partial: true` com `warnings` significa que alguma inspeção não foi possível; use os dados retornados, mas não conclua que recursos ausentes não existem. Sem `resource_inventory_v1`, o inventário do worker é sempre marcado parcial até a atualização. Binds e redes externas já são descobertos desde a v1.0.8; a capability é a confirmação explícita do worker para o contrato completo.
+
+Workers anunciam capabilities no heartbeat. `resource_inventory_v1` confirma inventário completo, `container_logs_filter_v1` habilita filtros temporais de logs validados pelo servidor e `exec_one_shot_v1` habilita execução avulsa. Durante atualização gradual, leituras básicas continuam quando possível; logs com janela temporal e exec avulso retornam `409` claro com a capability necessária, sem mudar a semântica silenciosamente.
+
+## Logs, aliases e execução
+
+`get_container_logs` aceita `since` e `until` em RFC3339 com timezone, timestamp Unix ou duração relativa positiva, como `30m`. O servidor resolve durações usando uma única referência de tempo, valida intervalo e regex, seleciona janela e tail e só depois aplica `pattern`. No máximo 1 MiB é examinado e 64 KiB retornam; `truncated` e `truncation_reason` avisam quando algum limite foi atingido. Não existe filtro por nível porque logs de containers não têm formato uniforme.
+
+Para chamadas mais ergonômicas, todas as tools que apontam para stacks aceitam `stack` como alias de `stack_id`. Tools de container aceitam `container_name`, o nome Docker real dentro da stack; `service_name` continua sendo seletor de serviço e não escolhe entre réplicas. Logs também aceitam `lines` para `tail` e `search` para `pattern`. Canonical e alias com o mesmo valor são aceitos; valores conflitantes são recusados. Campos desconhecidos continuam inválidos.
+
+## Atualizar a definição da stack pelo Git
+
+Para uma stack criada a partir do bloco `x-wireops` do Compose (ou do `wireops.yaml` legado), primeiro edite e faça commit da definição; depois chame `resync_stack_definition`. O servidor busca exatamente essa revisão do repositório, valida a definição e devolve `changed_fields` com os valores persistidos antes/depois. Ele nunca aceita valores de configuração no pedido MCP e **não** faz deploy de containers; chame `deploy_stack` quando quiser aplicar a nova revisão do Compose.
+
+Esse é o caminho suportado para alterar o `timeout` de uma stack gerenciada por arquivo depois da criação. `timeout` é uma duração Go, como `3m`; quando omitido, a stack usa o padrão `DEPLOY_TIMEOUT` do servidor (cinco minutos). Ele limita somente o `docker compose up`; o pull de imagens tem orçamento independente em `PULL_TIMEOUT` (30 minutos por padrão). Atualizações genéricas da stack continuam sem poder alterar campos de definição gerenciados pelo Git.
+
+`exec_in_container` tem uma única resposta previsível: `cmd`, `stdout`, `stderr`, `exit_code` e `timed_out`. Ele não abre terminal, não faz polling de transcript e não usa fallback por marcador. Se o worker não tiver `exec_one_shot_v1` (disponível desde a v1.0.13), o `409` orienta a atualizá-lo. Em timeout, a saída parcial é preservada e o `exit_code` é desconhecido (`null`).
+
+## Diagnóstico de commits e segredos
+
+O diagnóstico da stack expõe `deployed_commit`, `desired_commit`, `last_error_commit` e `expand.repository.last_commit_sha`. Eles respondem perguntas distintas: `deployed_commit` é a revisão em execução; `desired_commit` é a última revisão renderizada para a stack; `last_commit_sha` é a última cabeça conhecida do repositório; e `last_error_commit` é a revisão tentada que falhou. Erros históricos ficam sem commit inferido. Um sucesso posterior limpa os campos de último erro.
+
+`list_secrets` é um inventário de nomes de chave, nunca de valores. `stack_secrets` contém registros diretos de variável da stack marcados como secreto; `global_secrets` contém variáveis globais secretas vinculadas a ela; e `sops_secrets` traz somente chaves lidas do `secrets.yaml` SOPS do repositório quando disponível. `secret_count` conta apenas os dois primeiros grupos, não as chaves SOPS. `non_secret_keys` e `non_secret_count` cobrem somente variáveis diretas não secretas da stack; não representam `.env` do repositório, globals não secretos, nem valores SOPS descriptografados.
+
 ## Relacionado
 
 - [Jobs agendados](jobs.md): os campos e o ciclo de vida por trás das ferramentas `list_jobs`, `get_job_definition` e `generate_job_yaml`.
