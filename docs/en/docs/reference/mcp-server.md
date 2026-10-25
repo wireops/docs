@@ -38,3 +38,29 @@ Run `claude mcp list` to confirm it's connected, then just ask Claude things lik
 Other MCP-compatible clients (Cursor, Windsurf, the MCP Inspector, custom integrations) can connect the same way, pointing at the wireops-mcp URL with the same API key header. Most of them use the same config shape shown above, with only minor naming differences. `http://` is fine on localhost or a private network; if the client reaches wireops-mcp over an untrusted network, put TLS in front of it (e.g. a reverse proxy) and connect over `https://` instead, since the API key travels in a plain header.
 
 As with any API key, keep it out of anything that lands in Git. Pull it from a secrets manager or an env var at runtime instead.
+
+## Fleet observation and compatibility
+
+`get_stack_status` combines the persisted stack record with an **on-demand** `health` observation. These are deliberately different signals: `status` is the result of the most recent sync/deploy, while `health` is what Docker reports for the deployed revision now. A health read never starts a reconcile, polling loop, external probe or alert.
+
+Health is `healthy`, `degraded`, `unhealthy`, `starting`, or `unknown`, and includes the observation time plus counts of unhealthy, missing and starting services. It evaluates the services expected by the deployed revision, ignores scale-zero services, and treats a completed init service (the `customization.init` label, exit code 0) as healthy. An offline worker, a missing deployed revision, or an inspection failure produces `unknown` with a reason instead of an optimistic result.
+
+For a compact fleet-wide view, use `get_inventory`. It pages stacks (50 by default, 200 maximum) and accepts a worker id/hostname and group filter. Each item includes its worker version and capabilities, current services, health and resources. It limits worker commands to five in parallel, five seconds each and 25 seconds for the whole collection, so one unreachable worker leaves an annotated item instead of hiding every other result. Network identity is `(worker_id, network.id)`; equal Docker network names on different workers are not a shared network.
+
+`get_stack_resources` and inventory resources include named volumes, bind mounts and networks attached to the actual containers, including externally-managed networks. An empty result with `partial: false` is a confirmed empty inventory. `partial: true` and `warnings` mean that some inspection was unavailable; retain the returned data, but do not infer that missing resources do not exist. A worker without `resource_inventory_v1` is always reported as partial until updated. Bind mounts and external networks have been discovered since v1.0.8, but this capability is the worker's explicit confirmation that the complete inventory contract is supported.
+
+Workers advertise capabilities in their normal heartbeat. `resource_inventory_v1` confirms complete resource inventory, `container_logs_filter_v1` enables server-validated temporal/container log filtering, and `exec_one_shot_v1` enables one-shot execution. During a rolling upgrade, basic resource/log reads continue to work where possible; time-bounded logs and one-shot exec return a clear `409` naming the capability required rather than silently changing semantics.
+
+## Logs, aliases, and execution
+
+`get_container_logs` accepts `since` and `until` as RFC3339 timestamps with a timezone, Unix timestamps, or a positive relative duration such as `30m`. The server resolves relative values against one reference time, validates the interval and regex, then selects the time window and tail before applying `pattern`. It examines at most 1 MiB and returns at most 64 KiB; `truncated` and `truncation_reason` say when either limit was hit. There is intentionally no log-level filter because Docker container logs do not have a uniform level format.
+
+For ergonomic calls, every stack-targeting tool accepts `stack` as an alias for `stack_id`. Container tools accept `container_name` for the real Docker container name inside that stack; `service_name` remains a service selector and cannot choose among multiple replicas. Log tools also accept `lines` for `tail` and `search` for `pattern`. Passing a canonical field and its alias with the same value is fine; conflicting values are rejected. Unknown fields remain rejected.
+
+`exec_in_container` is one predictable operation: it returns `cmd`, `stdout`, `stderr`, `exit_code`, and `timed_out`. It does not open a terminal, poll a transcript, or add a marker-command fallback. If the worker lacks `exec_one_shot_v1` (available since v1.0.13), the `409` response tells you to update it. On timeout, partial output is preserved and `exit_code` is unknown (`null`).
+
+## Commit and secret diagnostics
+
+Stack diagnostics expose `deployed_commit`, `desired_commit`, `last_error_commit`, and the expanded repository's `last_commit_sha`. They answer different questions: `deployed_commit` is the revision successfully running; `desired_commit` is the last revision rendered for that stack; `last_commit_sha` is the most recently known repository head; and `last_error_commit` is the specific attempted revision that failed. Historical errors are intentionally left without a guessed commit. A later success clears the last-error fields.
+
+`list_secrets` is a key-name inventory, never a value reader. `stack_secrets` contains direct stack env-var records flagged `secret`; `global_secrets` contains secret global env vars bound to this stack; and `sops_secrets` contains only the keys parsed from the repository's SOPS `secrets.yaml` when available. `secret_count` counts the first two record groups only, not SOPS keys. `non_secret_keys` and `non_secret_count` cover only direct, non-secret stack env vars; they do not represent repository `.env`, global non-secret bindings, or decrypted SOPS values.

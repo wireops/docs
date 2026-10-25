@@ -14,7 +14,9 @@ All custom routes are prefixed `/api/custom/`. PocketBase also auto-exposes CRUD
 | `POST` | `/stacks/{id}/transfer` | Move stack to another worker |
 | `DELETE` | `/stacks/{id}` | Teardown & delete stack |
 | `GET` | `/stacks/{id}/services` | Live container statuses |
-| `GET` | `/stacks/{id}/resources` | Volumes + networks |
+| `GET` | `/stacks/{id}/health` | On-demand Docker health for the deployed revision; does not trigger sync |
+| `GET` | `/stacks/{id}/resources` | Attached named volumes, bind mounts and networks; `partial`/`warnings` make incomplete collection explicit (`503` dispatch failure, `502` worker/response failure) |
+| `GET` | `/inventory` | Paged compact stacks/workers/services/health/resources inventory; filters: `worker`, `group`, `page`, `per_page` (50 default, 200 max) |
 | `GET` | `/stacks/{id}/compose` | Read rendered compose YAML |
 | `GET` | `/stacks/{id}/revisions/{version}` | Read rendered compose YAML for a specific version |
 | `GET` | `/stacks/{id}/render-overrides` | View persisted render-time overrides (+ diff vs git) |
@@ -22,7 +24,8 @@ All custom routes are prefixed `/api/custom/`. PocketBase also auto-exposes CRUD
 | `DELETE` | `/stacks/{id}/render-overrides` | Clear render overrides; force-recreates |
 | `GET` | `/stacks/{id}/stream` | SSE log stream |
 | `GET` | `/stacks/{id}/container/{cid}/stats` | CPU/mem stats |
-| `GET` | `/stacks/{id}/container/{cid}/logs` | Container logs |
+| `GET` | `/stacks/{id}/container/{cid}/logs` | Bounded container logs; filters: `tail`, `pattern`, `since`, `until`; response states applied filters and truncation |
+| `POST` | `/stacks/{id}/exec` | One-shot non-interactive container exec; returns separated streams, exit code and timeout state; requires `exec_one_shot_v1` |
 | `POST` | `/stacks/{id}/container/stop` | Stop a container |
 | `POST` | `/stacks/{id}/container/restart` | Restart a container |
 | `GET` | `/stacks/import/discover` | Discover unmanaged Compose projects |
