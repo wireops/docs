@@ -57,6 +57,12 @@ Workers advertise capabilities in their normal heartbeat. `resource_inventory_v1
 
 For ergonomic calls, every stack-targeting tool accepts `stack` as an alias for `stack_id`. Container tools accept `container_name` for the real Docker container name inside that stack; `service_name` remains a service selector and cannot choose among multiple replicas. Log tools also accept `lines` for `tail` and `search` for `pattern`. Passing a canonical field and its alias with the same value is fine; conflicting values are rejected. Unknown fields remain rejected.
 
+## Refreshing a stack definition from Git
+
+For a stack created from a compose file's `x-wireops` block (or the legacy standalone `wireops.yaml`), edit and commit the definition first, then call `resync_stack_definition`. The server fetches that exact repository revision, validates the definition, and returns `changed_fields` with the persisted before/after values. It never accepts configuration values from the MCP request and does **not** deploy containers; call `deploy_stack` when you are ready to apply the new compose revision.
+
+This is the supported way to change a file-managed stack's `timeout` after creation. `timeout` is a Go duration such as `3m`; when omitted, the stack uses the server's `DEPLOY_TIMEOUT` default (five minutes). It bounds only `docker compose up`; image pulling has the independent `PULL_TIMEOUT` budget (30 minutes by default). Generic stack updates remain unable to alter Git-managed definition fields.
+
 `exec_in_container` is one predictable operation: it returns `cmd`, `stdout`, `stderr`, `exit_code`, and `timed_out`. It does not open a terminal, poll a transcript, or add a marker-command fallback. If the worker lacks `exec_one_shot_v1` (available since v1.0.13), the `409` response tells you to update it. On timeout, partial output is preserved and `exit_code` is unknown (`null`).
 
 ## Commit and secret diagnostics

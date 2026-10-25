@@ -55,6 +55,12 @@ Workers anunciam capabilities no heartbeat. `resource_inventory_v1` confirma inv
 
 Para chamadas mais ergonômicas, todas as tools que apontam para stacks aceitam `stack` como alias de `stack_id`. Tools de container aceitam `container_name`, o nome Docker real dentro da stack; `service_name` continua sendo seletor de serviço e não escolhe entre réplicas. Logs também aceitam `lines` para `tail` e `search` para `pattern`. Canonical e alias com o mesmo valor são aceitos; valores conflitantes são recusados. Campos desconhecidos continuam inválidos.
 
+## Atualizar a definição da stack pelo Git
+
+Para uma stack criada a partir do bloco `x-wireops` do Compose (ou do `wireops.yaml` legado), primeiro edite e faça commit da definição; depois chame `resync_stack_definition`. O servidor busca exatamente essa revisão do repositório, valida a definição e devolve `changed_fields` com os valores persistidos antes/depois. Ele nunca aceita valores de configuração no pedido MCP e **não** faz deploy de containers; chame `deploy_stack` quando quiser aplicar a nova revisão do Compose.
+
+Esse é o caminho suportado para alterar o `timeout` de uma stack gerenciada por arquivo depois da criação. `timeout` é uma duração Go, como `3m`; quando omitido, a stack usa o padrão `DEPLOY_TIMEOUT` do servidor (cinco minutos). Ele limita somente o `docker compose up`; o pull de imagens tem orçamento independente em `PULL_TIMEOUT` (30 minutos por padrão). Atualizações genéricas da stack continuam sem poder alterar campos de definição gerenciados pelo Git.
+
 `exec_in_container` tem uma única resposta previsível: `cmd`, `stdout`, `stderr`, `exit_code` e `timed_out`. Ele não abre terminal, não faz polling de transcript e não usa fallback por marcador. Se o worker não tiver `exec_one_shot_v1` (disponível desde a v1.0.13), o `409` orienta a atualizá-lo. Em timeout, a saída parcial é preservada e o `exit_code` é desconhecido (`null`).
 
 ## Diagnóstico de commits e segredos

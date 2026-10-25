@@ -9,6 +9,7 @@ All custom routes are prefixed `/api/custom/`. PocketBase also auto-exposes CRUD
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/stacks/{id}/sync` | Trigger git sync |
+| `POST` | `/stacks/{id}/resync-definition` | Fetch and re-read the committed `x-wireops`/`wireops.yaml` definition, update its managed settings and return a diff; does not deploy |
 | `POST` | `/stacks/{id}/rollback` | Rollback to a commit SHA |
 | `POST` | `/stacks/{id}/force-redeploy` | Force recreate containers/volumes/networks |
 | `POST` | `/stacks/{id}/transfer` | Move stack to another worker |
