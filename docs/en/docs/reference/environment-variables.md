@@ -16,10 +16,28 @@ Home: [[Home]]
 | `REPOS_WORKSPACE` | No | `DATA_DIR/repos` | Optional override for Git clone workspace |
 | `STACKS_STORAGE_PATH` | No | `{PB_DATA_DIR}/stacks` | Directory for rendered compose revision files |
 | `HEARTBEAT_INTERVAL` | No | `30` | Heartbeat interval in seconds. Remote worker read deadline is 3x this value |
-| `ALLOWED_PRIVATE_IP_RANGES` | No | — | Comma-separated CIDR ranges allowed for SSH host key scanning |
+| `ALLOWED_PRIVATE_IP_RANGES` | No | — | Comma-separated private IPs or CIDR ranges allowed for registry connection tests and SSH host key scanning. Leave unset to block private, loopback, link-local, and unspecified addresses. |
 | `BACKUP_UPLOAD_MAX_MB` | No | `4096` | Max size (MB) accepted when uploading a backup archive for restore (Settings → Backups) |
 | `GITHUB_OAUTH_CLIENT_ID` | No | — | GitHub OAuth App client ID. Enables the native "Connect GitHub" flow on the Add Repository modal |
 | `GITHUB_OAUTH_CLIENT_SECRET` | No | — | GitHub OAuth App client secret |
+
+### Private registry connection tests
+
+Registry credentials are selected automatically from the exact registry host
+and port in each stack's rendered image references. For a registry reachable
+only on your private network, the server intentionally refuses the **Test
+Connection** request until you explicitly allow its address. Set
+`ALLOWED_PRIVATE_IP_RANGES` on the server, for example:
+
+```bash
+ALLOWED_PRIVATE_IP_RANGES=10.0.0.0/8,192.168.1.0/24
+```
+
+Restart wireops after changing it. This setting authorizes the server-side
+test only; it does not configure Docker on workers. For plain HTTP or a
+self-signed certificate, mark the credential as **Insecure registry** and
+configure that registry under `insecure-registries` in each relevant worker
+Docker daemon.
 
 ### SMTP (optional)
 

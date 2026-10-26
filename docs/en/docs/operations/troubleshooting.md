@@ -16,7 +16,7 @@ into an issue.
 | Stack remains `pending` | Assigned worker is disconnected or command is queued | Worker status and pending deploy timeline |
 | Stack creation/deploy is rejected | Compose lint error or worker policy violation | Review step and lint/policy phase |
 | Secret resolution fails repeatedly | Provider disabled, path/field invalid, credentials expired, or wrong key | Integration **Test connection** and stack secret error |
-| Private image will not pull | Credential not assigned, registry test failed, or daemon lacks insecure-registry configuration | Registry credential and worker daemon config |
+| Private image will not pull | No credential with the exact image registry host and port, an invalid saved credential, or daemon lacks insecure-registry configuration | Registry credential and worker daemon config |
 | Backup is not mirrored | S3 integration/configuration, permissions, KMS, or network | Backup audit entry and server logs |
 | UI loads but requests fail | Incorrect `APP_URL`, reverse-proxy headers, CORS, or stale frontend cache | Browser network panel and server origin |
 
@@ -99,3 +99,18 @@ docker compose logs --tail=200 wireops-worker
 
 Redact hostnames, repository URLs, tokens, environment values, request headers,
 and filesystem paths that reveal private infrastructure before sharing output.
+
+## Private registry authentication
+
+Wireops selects a registry credential automatically when its normalized host
+and port exactly match an image in the final rendered Compose file. It does not
+match namespaces, subdomains, resolved IPs, or suffixes. A registry with no
+matching credential pulls anonymously; an unreadable matching credential stops
+the deploy before the worker runs it.
+
+If **Test Connection** reports that a private or loopback address is blocked,
+add that IP or CIDR to `ALLOWED_PRIVATE_IP_RANGES` in the server environment
+and restart the server. This controls only the server-side connection test.
+For plain HTTP or self-signed TLS, enable **Insecure registry** on the
+credential and configure Docker's `insecure-registries` on every worker that
+will pull it.
